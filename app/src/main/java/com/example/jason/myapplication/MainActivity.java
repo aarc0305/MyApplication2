@@ -1,5 +1,6 @@
 package com.example.jason.myapplication;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -68,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
             if(memberManager.login(inputAccountString,inputPasswordString)){
                 disPlay.setText("success");
                 System.out.println("success");
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, MapsActivity.class);
+                startActivity(intent);
             }
             else{
                 disPlay.setText("fail");
