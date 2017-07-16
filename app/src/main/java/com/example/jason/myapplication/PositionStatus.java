@@ -15,6 +15,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
+
 /**
  * Created by jason on 2017/6/4.
  */
@@ -24,9 +26,13 @@ public class PositionStatus {
     Position lastPosition = new Position();
     MapsActivity activity;
     GoogleMap mMap;
-    public PositionStatus(GoogleMap mMap, MapsActivity activity){
+    DataBase database;
+    CampusTour campusTour;
+    public PositionStatus(GoogleMap mMap, MapsActivity activity, DataBase database){
         this.activity = activity;
         this.mMap = mMap;
+        this.database=database;
+        campusTour = new CampusTour(database);
         double latitude = 25.021918;
         double longitude = 121.535285;
         LatLng newLatLng = new LatLng(latitude, longitude);
@@ -46,18 +52,7 @@ public class PositionStatus {
     {
         return currentPosition;
     }
-    public double getDistance(){
-        double lanA=currentPosition.getLatitude(),lanB=lastPosition.getLatitude(),
-                lonA=currentPosition.getLongitude(),lonB=lastPosition.getLongitude();
-        //0.00000900900901
-        double delX;
-        double delY;
-        delX=(lanA-lanB)/0.00000900900901;
-        delY=(lonA-lonB)/0.00000900900901;
-        double distance;
-        distance= (double) Math.sqrt((delX * delX) + (delY * delY));
-        return distance;
-    }
+
     public void openGPS()
     {
         if (ActivityCompat.checkSelfPermission(this.activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -86,6 +81,10 @@ public class PositionStatus {
                 lastPosition.setLatitude(currentPosition.getLatitude());
                 currentPosition.setLatitude(currentLatitude);
                 currentPosition.setLongitude(currentLongitude);
+
+                ArrayList<com.example.jason.myapplication.Location> locationList = campusTour.getLocationList(currentLongitude, currentLatitude);
+                campusTour.showLocationNow(locationList,mMap,activity);
+
             }
 
             @Override
@@ -104,5 +103,6 @@ public class PositionStatus {
             }
         };
         locationMgr.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDist, (android.location.LocationListener) locationListener);
+
     }
 }
