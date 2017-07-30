@@ -34,7 +34,7 @@ public class CampusTour {
         final MapsActivity mapactivity = activity;
         HashMap<Marker,Bundle> hashmap = new HashMap<Marker,Bundle>();
         for(Location location:locationList){
-            System.out.println(location.getLocationName());
+            //System.out.println(location.getLocationName());
             Bundle bundle = new Bundle();
             bundle.putString("locationName",location.getLocationName());
             bundle.putString("locationInfo",location.getLocationInfo());
@@ -68,6 +68,10 @@ class LocationListener implements GoogleMap.OnMarkerClickListener {
     }
     @Override
     public boolean onMarkerClick(Marker marker) {
+        if(marker.getTitle().equals("me")){
+            System.out.println("按到自己");
+            return false;
+        }
         Bundle bundle = hashmap.get(marker);
 
         Intent intent =new Intent();

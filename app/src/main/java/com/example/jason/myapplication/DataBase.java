@@ -69,8 +69,9 @@ public class DataBase {
     }
 
     public ArrayList<Location> queryLocation (double currentLongitude, double currentLatitude, ArrayList<Location> locationList){
-
-        Cursor query = sqliteDB.query("location_table", new String[] {"locationName", "locationInfo", "locationLongitude", "locationLatitude"}, null, null, null, null, null, null);
+        String condition = "locationLongitude<'"+(currentLongitude+0.05)+"'and locationLongitude>'"+(currentLongitude-0.05)+"'and locationLatitude<'"+(currentLatitude+0.05)+"'and locationLatitude>'"+(currentLatitude-0.05)+"'";
+        Cursor query = sqliteDB.query("location_table", new String[] {"locationName", "locationInfo", "locationLongitude", "locationLatitude"}, condition, null, null, null, null, null);
+        //Cursor query = sqliteDB.query("location_table", new String[] {"locationName", "locationInfo", "locationLongitude", "locationLatitude"}, null, null, null, null, null, null);
         int row_num = query.getCount();
         System.out.println(row_num);
         double shortestDis  = 1000000000;
@@ -93,18 +94,32 @@ public class DataBase {
 
             }*/
             queue.add(distance);
+            System.out.println(distance+getLocationName);
             map.put(distance,new Location(getLocationName, getLocationInfo, getLocationLongitude, getLocationLatitude));
             query.moveToNext();
         }
         /*System.out.println(shortestLocation.getLocationLatitude());
         System.out.println(shortestLocation.getLocationLongitude());
         locationList.add(shortestLocation);*/
-        for(int i=0;i<2;i++){
-            double shortDis = queue.peek();
-            Location closelocation = map.get(shortDis);
-            locationList.add(closelocation);
-            queue.remove(shortDis);
+        if(queue.size()>=3){
+            for(int i=0;i<3;i++){
+                double shortDis = queue.peek();
+                Location closelocation = map.get(shortDis);
+                locationList.add(closelocation);
+                queue.remove(shortDis);
+            }
         }
+        else{
+            int size = queue.size();
+            for(int i=0;i<size;i++){
+                double shortDis = queue.peek();
+                Location closelocation = map.get(shortDis);
+                System.out.println(i+": "+closelocation.getLocationName());
+                locationList.add(closelocation);
+                queue.remove(shortDis);
+            }
+        }
+
         return locationList;
 
 
